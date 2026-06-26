@@ -9,14 +9,14 @@
 ---
 
 ## Issue
-Trying to access a shared folder on the shared local network, but denied access with an error feedback; "Windows cannot access \\DESKTOP-IIRP5E1" with error code: 0x80070035 (The network path was not found.).
+User (client pc) tried to access a shared folder on the shared local network to load into QuickBooks 16.0, but denied access with an error feedback "Windows cannot access \\DESKTOP-IIRP5E1" (host pc), & with error code: 0x80070035 (The network path was not found).
 
 ## Troubleshooting Steps
-1. Verified that the IPv4, subnet mask, and default gateway of the server & host pc's match & are valid. All results were positive.
+1. Verified that the IPv4, subnet mask, and default gateway of the server & host pc's match & are valid. All results were positive, yet ticket #001 remains unresolved; network directory remains "empty" or inaccessible.
 2. Tried to manually access shared folder via file explorer on the client pc using \\ servers IP address. Result was an empty directory saying "The folder is empty".
 3. Tested ping to the server pc from client pc. Result was successful, yet ticket #001 remains unresolved; network directory remains "empty" or inaccessible.
 4. Toggled off firewall defender on host pc, yet ticket #001 remains unresolved; network directory remains "empty" or inaccessible.
-5. Issue unresolved as of this point. Changed troubleshooting approach from this point; I set up network share using 'net share' from the host pc's cmd (run as Admin), & after that I set up the folder's local permission with 'icacls'. These were completed through the following steps:
+5. Issue unresolved as of this point. Changed troubleshooting approach from this point; I set up network share using 'net share' from the host pc's cmd (run as Admin), & after that I set up new valid credentials with 'net User' & the folder's local permission with 'icacls'. These were completed through the following steps:
 6. Created a new standalone & dedicated user account in host pc's cmd that exists only for accessing this specific shared folder over the network, using command: 'net User NetworkUser YourPassword /add' (replace NetworkUser & YourPassword with brand new credentials for this non-existent & new account. I used client pc's name as NetworkUser credential).
 7. Granted local NTFS permissions using icacls command: 'icacls "C:\Path\To\Your\Folder" /grant HostComputerName\NetworkUser:(OI)(CI)F /t' (found HostComputerName using command 'hostname' in host pc's cmd, NetworkUser is the new credential created in the previous step).
 8. Created the network share with command: 'net share ShareName="C:\Path\To\Your\Folder" /grant:HostComputerName\NetworkUser,full' (replace ShareName with preferred placeholder. Replace HostComputerName & NetworkUser with same used in previous steps).
@@ -25,12 +25,22 @@ Trying to access a shared folder on the shared local network, but denied access 
 11. Ticket #001 finally resolved; client pc can now remotely access directories & files on the host pc.
 
 ## Root Cause
-The GUI failed because it relied on the "Everyone" (Guest) account, which Windows 10 Pro's default "Password Protected Sharing" policy blocks over the network.
+Windows 10 Pro's (host pc) default "Password Protected Sharing" policy was blocking the "Everyone" group used by the GUI sharing method, resulting in authentication failure and a misleading 0x80070035 error (on client pc).
 
 ## Resolution
-CMD method succeeded by creating and authenticating a specific local user account that the policy allowed.
+The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) on the host pc:
+1. Opened Command Prompt as Administrator.
+2. Created a dedicated local user account for network access using: 'net User NetworkUser YourPassword /add'
+3. Granted explicit NTFS (file system) permissions to the QuickBooks folder using: 'icacls "C:\Path\To\Your\Folder" /grant HostComputerName\NetworkUser:(OI)(CI)F /t'
+4. Created the network share with explicit user permissions using: 'net share QB_ri_ShareName="C:\Path\To\Your\Folder" /grant:HostComputerName\NetworkUser,full'
+
+## Verification:
+1. Successfully accessed \\192.168.0.121\QB_ri_ShareName from the client PC after authentication using the newly created NetworkUser credentials.
+2. The shared folder opened without errors.
+3. The user successfully loaded the QuickBooks 16.0 company file remotely.
+
+## Status:
+Resolved. End-user confirmed operational.
 
 ## Lessons Learned
-- Always test ping from the client pc's cmd first for network-related issues in order to narrow downroot cause.
-- `ip route` is a fast way to see if a default route exists.
-- Documenting my home network’s actual gateway in a note would prevent future mistakes.
+- Always test ping from the client pc's cmd first for network-related issues in order to narrow downroot cause earlier.
