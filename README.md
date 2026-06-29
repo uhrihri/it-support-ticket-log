@@ -1,2 +1,2 @@
 # it-support-ticket-log
-Documented IT support tickets from my home lab, practice scenarios, & place of work.
+Documented IT support tickets from my place of work, home lab, & practice scenarios.
