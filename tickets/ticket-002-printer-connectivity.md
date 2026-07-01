@@ -1,45 +1,51 @@
-# Ticket #002 – Printer connectivity troubleshooting
+# Ticket #002 – Printer connectivity troubleshooting on Windows 11 Pro
 
-**Status:** Unresolved  
-**Date:** 2026-06-29  
-**Category:** Networking / Office - Printer connectivity troubleshooting on Windows 11
-**Client PC Environment:** Windows 11 Pro
-**Host PC Environment:** Printer with wired connection via ethernet cable
+**Status:** Resolved  
+**Date:** 2026-06-29
+**Category:** Networking / Office - Printer connectivity
+**Client PC Environment:** Pc running on Windows 11 Pro
+**Host PC Environment:** HP LaserJet Pro M404-M405 printer
 
 ---
 
 ## Issue
-User reported that they are unable to access & make use of the office printer wirelessly (wifi) over local network. Printer is typically used in the office via ethernet cable connection, but user is connected to local network via wifi connection & not via ethernet cable. Printer is also connected to the 
+User reported that they are unable to access & make use of the office printer wirelessly (wifi) over local network.
+
+## Observations
+- User is connected to local network via wifi connection.
+- Printer is connected to the same local network via ethernet cable, but has been confirmed to also have capacity for wireless connection.
+
 ## Troubleshooting Steps
-1. Verified that the IPv4, subnet mask, & default gateway of the server & host pc's match & are valid. All results were positive, yet ticket #001 remains unresolved as network directory remains "empty" or inaccessible from the client pc.
-2. Tried to manually access shared folder via file explorer on the client pc using directory path search with \\ + the host pc's IP address; result was an empty folder with feedback "The folder is empty".
-3. Tested ping to the host pc from client pc; result was successful (3 of 4 packets delivered succesfully), yet ticket #001 remains unresolved as targeted network directory remains "empty" or inaccessible from the client pc.
-4. Disabled firewall defender & other network security restrictions on host pc via the respective & only active antivirus app, yet ticket #001 remains unresolved as targeted network directory remains "empty" or inaccessible from the client pc
-5. Issue unresolved as of this point. I changed troubleshooting approach from this point to manually giving client pc access permissions into the host pc's shared folders using cmd on the host pc; on the host pc's cmd (ran as Admin), I set up new credentials with 'net User' & the folder's local permission with 'icacls', after which I set up network share using 'net share'. These were completed through the following steps:
-6. Created a new standalone & dedicated user account via host pc's cmd that exists only for accessing host pc's shared directories over the network, using command: 'net User NetworkUser YourPassword /add' (replace NetworkUser & YourPassword with brand new credentials for this non-existent & new account. I used client pc's name as NetworkUser credential).
-7. Granted local NTFS (New Technology File System) permissions using icacls command: 'icacls "C:\Path\To\Your\Folder" /grant HostComputerName\NetworkUser:(OI)(CI)F /t' (found HostComputerName using command 'hostname' in host pc's cmd, NetworkUser is the new credential created in the previous step).
-8. Created the network share with command: 'net share ShareName="C:\Path\To\Your\Folder" /grant:HostComputerName\NetworkUser,full' (replace ShareName with preferred placeholder. Replace HostComputerName & NetworkUser with same used in previous steps).
-9. Tested by successfully accessing the host pc's shared folder remotely from client pc, & successfully loaded host pc's shared file inside QuickBooks 16.0 on client pc.
-10. Also tested by successfully connecting to the host pc remotely from client pc's file explorer with direct network directory search: '\\HostComputerIP\ShareName' (replace placeholders respectively)
-11. Ticket #001 finally resolved; client pc can now remotely access directories & files on the host pc.
+1. Verified that the IPv4, subnet mask, & default gateway of the printer & pc match & are valid. All results were positive, yet ticket #002 remains unresolved as user is unable to print from printer via wireless connection.
+2. Tested ping to the printer from the user's pc. Result was positive; 2 of 4 packets delivered successfully, yet ticket #002 remains unresolved as user is unable to print from printer via wireless connection.
+3. Navigated to device manager to confirm printer's driver is up to date: 'Windows key + X > Device Manager > Printers'. Result was negative; did not find printer in the list of printers.
+4. Confirmed that the printer is listed in the pc's devices list by navigating to Windows settings: 'Windows key + I > Bluetooth & devices  > Printers & scanners'. Result was positive.
+5. Opened the particular printer's settings by clicking on the printer in the list.
+6. Inside the printer's settings, navigated to & clicked 'Print test page'. Result was negative; no feedback.
+7. Still inside the printer's settings, navigated to 'Open print queue' to check the status of the file sent to the printer. File was tagged as pending.
+8. Still in the printer's print queue, cancelled & cleared all pending print jobs.
+9. Back inside the printer's settings, navigated to & clicked on 'Remove' to delete printer from pc device list. Result was positive; printer was deleted from pc devices list.
+10. In 'Printer & scanners' settings, navigated to & clicked on 'Add device' > Printer listed, to re-add/install printer to pc's devices list afresh. Result positive; printer was successfully added.
+11. Again, opened the particular printer settings by clicking on the printer in the pc's devices list.
+12. Inside the printer's settings, navigated to & clicked 'Print test page'. Result was positive; test page request sent,  received & printed successfully.
+13. Ticket #002 finally resolved; user's pc successfuly connected with printer via wireless connection, & printed successfully.
 
 ## Root Cause
-Windows 10 Pro's (on host pc) default "Password Protected Sharing" policy was blocking the "Everyone" group used by the GUI sharing method, resulting in Windows authentication failure & a misleading 0x80070035 QuickBooks 16.0 error (on client pc).
+Existing printer configuration on user's pc was outdated.
 
 ## Resolution
 The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) on the host pc:
-1. Opened Command Prompt as Administrator.
-2. Created a dedicated local user account for network access using: 'net User NetworkUser YourPassword /add'
-3. Granted explicit NTFS (file system) permissions to the QuickBooks folder using: 'icacls "C:\Path\To\Your\Folder" /grant HostComputerName\NetworkUser:(OI)(CI)F /t'
-4. Created the network share with explicit user permissions using: 'net share QB_ri_ShareName="C:\Path\To\Your\Folder" /grant:HostComputerName\NetworkUser,full'
+1. Opened Windows settings 'Windows key + I'
+2. Navigated to printer's settings 'Windows settings > Bluetooth & devices  > Printers & scanners > Printer'
+3. Inside the printer's settings, deleted printer from pc device list 'Printer > Remove'
+4. Re-add printer to pc's device list 'Printers & scanners > Add device'
 
 ## Verification:
-1. Successfully accessed '\\192.168.0.121\QB_ri_ShareName' on the host pc remotely from the client PC after authentication using the newly created NetworkUser credentials.
-2. The host pc's shared direectories opened remotelyover the network on the client pc without errors.
-3. The user successfully loaded the QuickBooks company file on the host pc remotely into the QuickBooks 16.0 app on client pc.
+1. Test page file sent to respective printer, & printed successfully over local network wireless connection.
+2. User confirmed respective pc-printer wireless connection operational.
 
 ## Status:
-Resolved. End-user confirmed operational.
+Resolved.
 
 ## Lessons Learned
-- Always test ping from the client pc's cmd first for network-related issues in order to narrow down root cause earlier.
+- Always try the easiest & most obvious fixes first for printer related issues.
