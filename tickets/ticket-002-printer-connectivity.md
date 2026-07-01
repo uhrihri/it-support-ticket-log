@@ -34,7 +34,7 @@ User reported that they are unable to access & make use of the office printer wi
 Existing printer configuration on user's pc was outdated.
 
 ## Resolution
-The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) on the host pc:
+The issue was resolved by deleting printer from, & re-adding freshly to the pc's devices list:
 1. Opened Windows settings 'Windows key + I'
 2. Navigated to printer's settings 'Windows settings > Bluetooth & devices  > Printers & scanners > Printer'
 3. Inside the printer's settings, deleted printer from pc device list 'Printer > Remove'
