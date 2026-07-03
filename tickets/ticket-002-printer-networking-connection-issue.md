@@ -1,8 +1,8 @@
-# Ticket #002 – Printer connectivity troubleshooting on Windows 11 Pro
+# Ticket #002 – Printer networking issue on Windows 11 Pro
 
 **Status:** Resolved  
 **Date:** 2026-06-29
-**Category:** Networking / Office - Printer connectivity
+**Category:** Office / Printing / Networking
 **Client PC Environment:** Pc running on Windows 11 Pro
 **Host PC Environment:** HP LaserJet Pro M404-M405 printer
 
