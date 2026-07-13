@@ -1,10 +1,10 @@
-# Ticket #001 – Network Shared Folder Access Error on Windows 11 Pro | QuickBooks 16.0 - Network Path Not Found (0x80070035)
+# Ticket #001 – Network Shared Folder Access Error | QuickBooks 16.0 (0x80070035)
 
 **Status:** Resolved  
 **Date:** 2026-06-26  
-**Category:** Networking / Office - QuickBooks Enterprise 16.0
-**Client PC Environment:** Intuit QuickBooks Enterprise 16.0 in Windows 11 Pro
-**Host PC Environment:** Windows 10 Pro
+**Category:** Networking / Office / QuickBooks Enterprise 16.0
+**Client Environment:** PC running Intuit QuickBooks Enterprise 16.0 on Windows 11 Pro
+**Host Environment:** Desktop running on Windows 10 Pro
 
 ---
 
