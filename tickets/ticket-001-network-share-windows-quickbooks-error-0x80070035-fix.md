@@ -21,7 +21,7 @@ User (client) tried to access a shared folder located on the server pc, over loc
 
 4. Disabled firewall defender & other network security restrictions on server using the active antivirus app, yet ticket #001 remains unresolved as the server remains inaccessible by the client.
 
-5. Issue unresolved as of this point. I changed troubleshooting approach from this point towards manually giving client access permissions into the targeted directory on the server using cmd on the server; on the server's cmd (ran as Admin), I set up new credentials with command 'net user' & the folder's local permission (NTFS) with 'icacls', after which I set up network share using 'net share', & then attempted to connect to the server directly using the newly created credentials. These were completed through the following steps:
+5. Issue unresolved as of this point. Troubleshooting & fix approach changed from this point towards manually giving client access permissions into the targeted directory on the server using cmd on the server; on the server's cmd (ran as Admin), I set up new credentials with command 'net user' & the folder's local permission (NTFS) with 'icacls', after which I set up network share using 'net share', & then attempted to connect to the server directly using the newly created credentials. These were completed through the following steps:
 
 6. Created a new standalone & dedicated user account via server's cmd that exists only for remotely accessing targeted directory on server over the local area network, using command: 'net user NetworkUser YourPassword /add' (replace NetworkUser & YourPassword with brand new credentials for this non-existent & new account. I used clients hostname as NetworkUser credential).
 
@@ -36,15 +36,11 @@ User (client) tried to access a shared folder located on the server pc, over loc
 11. To connect client to server with new credentials, using CMD to connect (without mapping a drive letter), use command 'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes' (persistent:no means you have to enter credentials for every new session after you log off or reboot the client, while the yes option saves your credentials & gives you access after you navigate to the resource).
 
 12. To map server's explicit directory (targeted shared resource/directory) as new drive for direct access on client by connecting client to server using credentials once (doesn't expire sessionally), use command 'net use Z: \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'. Z: is the preferred new drive letter. 'user:' is a static command flag. Password is for the newly created user account (NetworkUser) used to configure the net share earlier. Replace ShareName placeholder with earlier created share name for targeted resource directory.
-
-13. Tested by successfully accessing the server's shared directory remotely from the client using the different methods listed above, & successfully loaded server's targeted file inside QuickBooks 16.0 on client.
-
-14. Also tested by successfully connecting to the server remotely from the client using unc path search in file explorer address box with: '\\HostComputerIP\ShareName' (replace placeholders respectively).
-
-15. Ticket #001 finally resolved; client pc can now remotely access directories & files on the server pc.
+    
+13. Ticket #001 finally resolved; client pc can now remotely access directories & files on the server pc.
 
 ## Root Cause
-Windows 10 Pro's (on host pc) default "Password Protected Sharing" policy was blocking the "Everyone" group used by the GUI sharing method, resulting in Windows authentication failure & a misleading 0x80070035 QuickBooks 16.0 error (on client pc).
+Windows 10 Pro's (server) default "Password Protected Sharing" policy was blocking the "Everyone" group used by the GUI sharing method, resulting in Windows authentication failure & a misleading 0x80070035 QuickBooks 16.0 error (on client).
 
 ## Resolution
 The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) on the host pc:
@@ -53,23 +49,26 @@ The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD)
 3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using: 'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'
 4. Created the network share with explicit user permissions using: 'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'
 
-## Verification:
-1. Successfully accessed server's targeted directory remotely from the client pc after authentication using the newly created NetworkUser credentials.
-2. The server's shared directories opened remotely over the network on the client pc without errors.
-3. The user successfully loaded the QuickBooks company file remotely from the server into the QuickBooks 16.0 app installed on the client.
+## Verification
+- Successfully accessed the server's shared directory remotely from the client after authentication, using the newly created NetworkUser credentials.
+- Successfully loaded server's targeted file inside QuickBooks 16.0 on client from the server's shared network directory.
+- The server's shared directories opened remotely over the network on the client pc without errors.
+- Successfully connected to the server remotely from the client using unc path search in file explorer address box with query prompt: '\\HostComputerIP\ShareName' (replace placeholders respectively)
 
-## Status:
+## Status
 Resolved. End-user confirmed operational.
 
-## Notes:
-- To disconnect a session since a non-persistent session remains active until you log off or explicitly disconnect it; in server's cmd use command 'net use \\ServerIp\ShareName /delete', or to delete all sessions use command 'net use * /delete'.
-- Use command 'net use' to view all active connections.
+## Notes
+- To view all active connections use command 'net use'.
+- To disconnect a session since a non-persistent session remains active until you log off or explicitly disconnect it; in server's cmd use command 'net use \\ServerIp\ShareName /delete'.
+- To delete all sessions use command 'net use * /delete'.
 
 ## Lessons Learned
-- Always look out for spelling errors in usernames & hostnames.
-- Use correct direction of slashes; for network paths backward slashes (\), for command options or flags use forward slashes (/).
+- Always look out for spelling & similar errors in credentials, ip adresses & hostnames.
+- Use correct direction of slashes; for network paths on Windows OS use backward slashes (\), for command options or flags in Windows command prompt use forward slashes (/).
 - Always doubletap; verify & confirm action after each command.
 
+---
 
 
 
