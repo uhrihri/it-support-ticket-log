@@ -46,11 +46,12 @@ The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD)
 2. Created a dedicated local user account for network access using: **'net user NetworkUser YourPassword /add'**.
 3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'**.
 4. Created the network share with explicit user permissions using: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
+5. Connected client to server with new credentials, using CMD command: **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
 
 ## Verification
 - Successfully accessed the server's targeted directory remotely from the client after authentication, using the newly created *NetworkUser* credentials on the client without any errors via gui file explorer network directory.
 - Successfully loaded server's targeted file inside QuickBooks 16.0 on client from the server's shared network directory.
-- Successfully connected to the server remotely from the client using unc path search in file explorer address box with query prompt: **'\\HostComputerIP\ShareName'** (replace placeholders respectively).
+- Successfully connected to the server remotely from the client using unc path search in file explorer address box with query prompt: **'\\HostComputerIP\ShareName'** *(replace placeholders respectively)*.
 
 ## Status
 Resolved. End-user confirmed operational.
