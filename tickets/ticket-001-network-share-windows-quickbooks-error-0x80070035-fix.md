@@ -50,6 +50,7 @@ The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD)
 2. Created a dedicated local user account for network access using command: **'net user NetworkUser YourPassword /add'**.
 3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using command: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'**.
 4. Created the network share with explicit user permissions using command: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
+
 **On the client:**
 5. Connected client to server with new credentials, using command: **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
 
