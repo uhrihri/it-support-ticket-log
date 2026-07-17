@@ -52,6 +52,7 @@ The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD)
 4. Created the network share with explicit user permissions using command: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
 
 **On the client:**
+
 5. Connected client to server with new credentials, using command: **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
 
 ## Verification
