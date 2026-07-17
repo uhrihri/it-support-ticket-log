@@ -23,7 +23,9 @@ User (client) tried to access a shared folder located on the server pc, over loc
 
 5. Issue unresolved as of this point. Troubleshooting & fix approach changed from this point towards manually giving client access permissions into the targeted directory on the server using cmd on the server; on the server's cmd (ran as Admin), I set up new credentials with command **'net user'** & the folder's local permission (NTFS) with **'icacls'**, after which I set up network share using **'net share'**, & then attempted to connect to the server directly using the newly created credentials. These were completed through the following steps:
 
-6. Created a new standalone & dedicated user account via server's cmd that exists only for remotely accessing targeted directory on server over the local area network, using command: **'net user NetworkUser YourPassword /add'** *(replace NetworkUser & YourPassword with brand new credentials for this non-existent & new account. I used clients hostname as NetworkUser credential)*.
+**On server**:
+
+6. Created a new standalone & dedicated user account via cmd that exists only for remotely accessing targeted directory on server over the local area network, using command: **'net user NetworkUser YourPassword /add'** *(replace NetworkUser & YourPassword with brand new credentials for this non-existent & new account. I used clients hostname as NetworkUser credential)*.
 
 7. Granted local NTFS (New Technology File System) permissions using icacls command: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'** *(found ServerHostname using command 'hostname' in server's cmd. NetworkUser is the newly created credential in the previous step)*.
 
@@ -31,22 +33,25 @@ User (client) tried to access a shared folder located on the server pc, over loc
 
 9. Created the network share with command: **'net share ShareName="C:\Path\To\Your\Folder" /grant:ServerHostname\NetworkUser,full'** *(replace ShareName with preferred alias placeholder for explicitly defining targeted resource/directory; this is the share name clients would use to access this shared resource or directory. Replace ServerHostname & NetworkUser with same used in previous steps)*.
 
-10. To connect client to server with new credentials, using unc path (without mapping new drive letter for server file share resource on client); in gui: open windows explorer *'win+e'*, in address box (works the same using run dialog 'win+r'; paste unc path too) type unc path **'\\serverIP\ShareName'** or **'\\serverHostname\ShareName'**, enter credentials when prompted *(i.e. username: ServerHostnameOrIp\ShareName, use YourPassword)*.
+**On client**:
 
-11. To connect client to server with new credentials, using CMD to connect (without mapping a drive letter), use command **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'** *(persistent:no means you have to enter credentials for every new session after you log off or reboot the client, while the yes option saves your credentials & gives you access after you navigate to the resource)*.
+10. To connect client to server with new credentials, using unc path (without mapping new drive letter for server file share resource on client); in gui: open windows explorer *'win+e'*, in address box (works the same as using *run* dialog 'win+r'; paste unc path too) type unc path **'\\serverIP\ShareName'** or **'\\serverHostname\ShareName'**, enter credentials when prompted *(i.e. username: ServerHostnameOrIp\ShareName, use YourPassword)*.
 
-12. Ticket #001 finally resolved; client pc can now remotely access directories & files on the server pc.
+11. To connect client to server with new credentials, using CMD to connect (without mapping a drive letter), use command **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'** *("persistent:no" means you have to enter credentials for every new session after you log off or reboot the client, while the yes option saves your credentials & gives you access after you navigate to the resource)*.
+
+12. Ticket #001 finally resolved; client pc can now remotely access target directories & files on the server pc.
 
 ## Root Cause
 Windows 10 Pro's (server) default *"Password Protected Sharing"* policy was blocking the *"Everyone"* group used by the GUI sharing method, resulting in Windows authentication failure & a misleading 0x80070035 QuickBooks 16.0 error (on client).
 
 ## Resolution
-The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) on the host pc:
+The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD) **on the server**:
 1. Opened Command Prompt as Administrator.
-2. Created a dedicated local user account for network access using: **'net user NetworkUser YourPassword /add'**.
-3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'**.
-4. Created the network share with explicit user permissions using: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
-5. Connected client to server with new credentials, using CMD command: **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
+2. Created a dedicated local user account for network access using command: **'net user NetworkUser YourPassword /add'**.
+3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using command: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'**.
+4. Created the network share with explicit user permissions using command: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
+**On the client:**
+5. Connected client to server with new credentials, using command: **'net use \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
 
 ## Verification
 - Successfully accessed the server's targeted directory remotely from the client after authentication, using the newly created *NetworkUser* credentials on the client without any errors via gui file explorer network directory.
@@ -57,9 +62,17 @@ The issue was resolved by bypassing the GUI & using Windows Command Prompt (CMD)
 Resolved. End-user confirmed operational.
 
 ## Notes
-- To view all active connections use command **'net use'**.
-- To disconnect a session since a non-persistent session remains active until you log off or explicitly disconnect it; in server's cmd use command **'net use \\ServerIp\ShareName /delete'**.
-- To delete all sessions use command **'net use * /delete'**.
+On server cmd:
+- To view all active connections use command: **'net use'**.
+- To disconnect a session since a non-persistent session remains active until you log off or explicitly disconnect it, use command: **'net use \\ServerIP-or-Hostname\ShareName /delete'**.
+- To delete all sessions use command: **'net use * /delete'**.
+- To view particular net share status use command: **'net share ShareName'**.
+- To view particular net user status use command: **'net user NetworkUser'**.
+- To list all active net share use command: **'net share'**.
+- To list all active net users use command: **'net users'**.
+- To delete active net share use command: **'net share ShareName /delete'**.
+- To delete net user use command: **'net user NetworkUser /delete'**.
+
 
 ## Lessons Learned
 - Always look out for spelling & similar errors in credentials, ip adresses & hostnames.
