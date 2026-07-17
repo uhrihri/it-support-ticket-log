@@ -29,6 +29,8 @@ User (client) tried to access a shared folder located on the server pc, over loc
 
 9. Created the network share with command: **'net share ShareName="C:\Path\To\Your\Folder" /grant:ServerHostname\NetworkUser,full'** *(replace ShareName with preferred alias placeholder for explicitly defining targeted resource/directory; this is the share name clients would use to access this shared resource or directory. Replace ServerHostname & NetworkUser with same used in previous steps)*.
 
+**On client**:
+
 10. Mapped server's explicit directory (targeted shared directory) as new drive for direct access in the client's file explorer side panel, by connecting client to server through authentication with the newly created credentials once (doesn't expire sessionally), use command **'net use Z: \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'** *(Z: is the preferred new drive letter. 'user:' is a static command flag. Password is for the newly created user account (NetworkUser) used to configure the net share earlier. Replace ShareName placeholder with earlier created share name for targeted resource directory.)*
     
 11. Ticket #003 finally resolved; client pc can now remotely access targeted server directories & files remotely.
@@ -42,7 +44,10 @@ Since user regularly uses this operation daily, the issue was resolved by creati
 2. Created a dedicated local user account for network access using: **'net user NetworkUser YourPassword /add'**.
 3. Granted explicit NTFS (file system) permissions to the targeted QuickBooks directory on the server using: **'icacls "C:\Path\To\Your\Folder\On\Server" /grant ServerHostname\NetworkUser:(OI)(CI)F /t'**.
 4. Created the network share with explicit user permissions using: **'net share ShareName="C:\Path\To\Your\Folder\On\Server" /grant:ServerHostname\NetworkUser,full'**.
-5. Mapped the server's targeted directory explicitly as a new network drive for easy access on the client in it's file explorer side panel using: **'net use Z: \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
+
+**On client**:
+
+6. Mapped the server's targeted directory explicitly as a new network drive for easy access on the client in it's file explorer side panel using: **'net use Z: \\ServerIp\ShareName /user:ServerHostname\NetworkUser YourPassword /persistent:yes'**.
 
 ## Verification
 - Successfully accessed the server's targeted directory remotely from the client after authentication, using the newly created *NetworkUser* credentials on the client without any errors via gui file explorer network directory.
@@ -57,6 +62,12 @@ Resolved. End-user confirmed operational.
 - To view all active connections use command 'net use'.
 - To disconnect a session since a non-persistent session remains active until you log off or explicitly disconnect it; in server's cmd use command 'net use \\ServerIp\ShareName /delete'.
 - To delete all sessions use command 'net use * /delete'.
+
+**On client**:
+
+- To verify drive mapping use command: **'net use'**
+- To forget/clear any existing or stale connections mapped with a specific server IP or hostname (pc name) use command: **'net use \\ServerIP/Hostname /delete'** ("not found").
+
 
 ## Lessons Learned
 - Always look out for spelling & similar errors in credentials, ip adresses & hostnames.
