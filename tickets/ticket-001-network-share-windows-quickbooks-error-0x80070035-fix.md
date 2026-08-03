@@ -3,8 +3,9 @@
 **Status:** Resolved  
 **Date:** 2026-06-26  
 **Category:** Networking / Office / QuickBooks Enterprise 16.0
-**Client Environment:** PC running Intuit QuickBooks Enterprise 16.0 on Windows 11 Pro
-**Host Environment:** Desktop running on Windows 10 Pro
+**Host Environment:** PC running Intuit QuickBooks Enterprise 16.0 on Windows 11 Pro
+
+**Server Environment:** Desktop running on Windows 10 Pro
 
 ---
 
