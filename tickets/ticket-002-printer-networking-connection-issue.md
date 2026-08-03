@@ -3,8 +3,8 @@
 **Status:** Resolved  
 **Date:** 2026-06-29  
 **Category:** Office / Printing / Networking  
-**Client Environment:** Pc running on Windows 11 Pro  
-**Host Environment:** HP LaserJet Pro M404-M405 printer
+**Server Environment:** HP LaserJet Pro M404-M405 printer  
+**Host Environment:** Pc running on Windows 11 Pro  
 
 ---
 
