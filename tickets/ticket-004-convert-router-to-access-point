@@ -1,0 +1,67 @@
+# Ticket #004 – Switch Connection
+
+**Status:** Resolved  
+**Date:** 2026-07-31  
+**Category:** Networking / Office / Switch / Ethernet  
+**Environment:** Cisco  WRVS4400N Wireless-N Gigabit Security Router with VPN, PC running on Windows 11 Pro 
+
+---
+
+## Issue
+Training room is on a separate floor from the server room & has very weak wifi signal. Only a single ethernet port connected to the main router is available in the entire training room.
+
+## Troubleshooting Steps
+- Converted a decommissioned "Cisco WRVS4400N Wireless-N Gigabit Security Router with VPN" to serve as an access point (AP) by the following steps:
+1. Directly connected router to pc using rj45 ethernet cable with one end in the pc & the other end into the router's WAN port.
+2. Confirmed successful connection & router details using the "ipconfig" command in the pc's cmd.
+3. Noted that this particular router does not have a default access point operation mode.
+4. Recorded all router's details printed from the ipconfig results.
+5. Copied the router's ethernet default gateway from the ipconfig result.
+6. Pasted the copied gateway ip address in the browser's address bar to access the router's management & admin's settings.
+7. Entered admin-admin respectively as username-password credentials in order to log into the router's management settings.
+8. Entered the LAN settings inside the router's management.
+9. In the LAN setting, I changed the router's local ip address from 192.168.1.1 to 192.168.1.3.  
+10. Recorded the new router's local ip address for future management login access.  
+11. Still inside the LAN settings, I disabled the dhcp.
+12. Clicked on save, then waited for the router to reboot. After reboot, router would serve as an access point.
+13. Disconnected ethernet cable from router's WAN port & reconnected into the router's LAN port 2 instead.
+14. Connected router to the wall ethernet port to connect it to the main router using another ethernet cable with one end of the cable into the wall port, & the other end into the router's LAN port 1. 
+13. Navigated to Windows ethernet settings through *'Win+i >  Network & internet > Ethernet > edit IP assignment'*.
+14. Changed IP settings from "Automatic (DHCP)" to "manual", then toggled on "IPv4".
+15. Set IP address field to 192.168.1.50 (changed only the network id of the ethernet default gateway gotten from the ipconfig command to a unique & valid number i.e. the last number in the ip address).
+16. Set Subnet mask to 255.255.255.0
+17. Set Gateway to 192.168.1.3 (changed only the network id of the ethernet default gateway gotten from the ipconfig command to another unique & valid number i.e. the last number in the ip address).
+18. Set Preferred DNS to 8.8.8.8 (free & public DNS server by Google).
+19. Save settings.
+20. 
+
+## Root Cause
+Insufficient adjacent ethernet sockets (rj45 female sockets) to serve clients.
+
+## Resolution
+The issue was resolved by implementing a simple desktop switch to the network connection in order toexpand the LAN capacity;  
+1. Connected the switch to the main router via one of the two available wall sockets using an ethernet cable with rj45 connectors.  
+2. Connected the access point router to the main router via the second wall socket using an ethernet cable with rj45 connectors.  
+3. Separately connected both user pc's to the switch in order to access the main router, using ethernet cables with rj45 connectors.  
+
+## Verification
+- Users successfully accessed the internet using wifi connection from the access point router.
+- Users successfully accessed the main server through the main router via the LAN connections on the switch.  
+
+## Status
+Resolved. End-users confirmed operational.
+
+## Notes
+- For routers that do not have default access point (AP) modes (where you have to switch to AP by manually setting router's ip *[default gateway ip]* & disabling dchp), connect ethernet cable into the router's ethernet LAN 1 port & not the WAN port, for connection to the main router or switch.
+- For routers that have default access point (AP) modes, connect ethernet cable into the router's ethernet WAN port, for connection to the main router or switch.
+
+
+## Lessons Learned
+- Familiarize with the type of router that is being used as access point, & take the notes above into consideration.
+
+---
+
+
+
+
+
