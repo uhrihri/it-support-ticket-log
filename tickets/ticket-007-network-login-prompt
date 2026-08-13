@@ -1,0 +1,72 @@
+# Ticket #007 – Repeated Network Credentials Login Prompt
+
+**Status:** Resolved   
+**Date:** 2026-08-13   
+**Category:** Networking / Network Sharing 
+**Server Environment:** Private network server running on Windows 10 Pro desktop   
+**Host Environment:** PC running on Windows 11 Pro     
+
+---
+
+## Issue  
+User's (host) pc denies server acess & keeps requesting for network login & authentication after every pc restart.
+
+## Troubleshooting Steps  
+1. Store/save credentials in host pc's Credential Manager.  
+
+## Root Cause  
+* Even after configuring the respective net user credentials in CMD with the *'/persistent:yes'* parameter/switch; upon restart, & at boot, the pc would attempt to reconnect the drive using the saved username, consequently attempting to authenticate using the current Windows login session *(the password used to log into the PC)*, & not the password you configured for the net use command. If that username/password doesn't match the server's credentials, Windows fails silently & shows the drive as "Disconnected" or "Access Denied" when clicked on.
+* Windows does not automatically retrieve the pass you typed in the *'net use'* command, unless that password is explicitly saved in the Credential Manager.
+
+## Resolution  
+* Using GUI (client/host pc):  
+1. Open Windows Credential Manager using **Win + R**.  
+2. Type in **control keymgr.dll**.  
+3. Click "Windows Credentials".  
+4. Click "Add a Windows credential".  
+5. Fill in details; 
+* for Internet or network address: **\\serverhostname** or **serverhostname** *(replace with server's hostname)*  
+* for User name: **netuser** or **SERVERNAME\netuser** *(replace with net user/username)*  
+* for Password: **NetUserPassword** *(replace with password created for the respective Net User account used in the "User name" field above)*  
+6. Click "Ok".
+
+* Using Command Prompt (CMD; client/host pc):
+1. Open CMD as administrator.  
+2. Use command **'cmdkey /add:serverhostname /user:netuser /pass:YourPassword'** to explicitly add/store the respective net user account's username & password to Windows Credential Manager *(replace 'serverhostname' with server's hostname, 'netuser' with the net user account's username & 'YourPassword' with the respective net user account's password)*.   
+
+
+## Verification  
+* Restart host pc & try to access server's network folder to see if the saved credential persists without prompting for manual authentication login.  
+
+* Using GUI (in host pc):  
+1. 1. Open Windows Credential Manager using **Win + R**.  
+2. Type in **control keymgr.dll**.  
+3. Click "Windows Credentials".  
+4. Look under **"Windows Credentials"** for an entry matching the respective server's name or IP address.  
+
+* Using CMD (in host pc):
+1. To verify successful credential storage by viewing all credentials using CMD command **'cmdkey /list'**.  
+2. To filter-search specific server in CMD use **'cmdkey /list | findstr serverhostname'**.
+
+## Status  
+* Resolved. End-users confirmed operational.  
+
+## Notes   
+* When you use cmdkey, you add the credential to the root of the server.  
+* 'cmdkey /add' cannot be used to reset/set new/forgetten password. Password must've been set already before storing credential in Windows Credential Manager with 'cmdkey /add'.  
+* In CMD use '**cmdkey /list**' command to view all stored credentials *(doesn't show passwords)*.  
+* In CMD use **'cmdkey /delete:serverhostname'** to delete/remove a stored credential.  
+* In CMD use **'cmdkey /delete:*'** to delete all stored credentials.  
+* In CMD use **'net use'** to view all active network connections.  
+* In CMD use **'net use Z: /delete'** to delete a specific mapped drive.  
+* In CMD use **'net use * /delete'** to delete all network connections.   
+* In CMD use **'net use /persistent:yes'** to change all global persistence to Yes or No.  
+* In CMD use **'net use Z: \\serverhostname\netshare /persistent:yes'** to map drive; should need be after storing credential.  
+
+
+
+## Lessons Learned  
+* Always record save credentials.  
+* When appropriate check or set password to be persistent.  
+
+---
